@@ -36,7 +36,7 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = HuggingFaceEmbeddings("sall-MiniLM-L6-v2")
+      embeddings = HuggingFaceEmbeddings("all-MiniLM-L6-v2")
       knowledge_base = FAISS.from_texts(chunks, embeddings)
       
       # show user input
