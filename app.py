@@ -3,7 +3,7 @@ import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+from sentence_transformers import SentenceTransformer
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
@@ -36,7 +36,8 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = SentenceTransformerEmbeddings("all-MiniLM-L6-v2")
+      model_name = "all-MiniLM-L6-v2"
+      embeddings = SentenceTransformer(model_name)
       knowledge_base = FAISS.from_texts(chunks, embeddings)
       
       # show user input
