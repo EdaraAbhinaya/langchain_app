@@ -36,7 +36,7 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",model_kwargs={'device': 'cpu'})
+      embeddings = HuggingFaceEmbeddings("sall-MiniLM-L6-v2")
       knowledge_base = FAISS.from_texts(chunks, embeddings)
       
       # show user input
