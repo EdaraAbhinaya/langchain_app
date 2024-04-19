@@ -35,7 +35,7 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = SentenceTransformerEmbeddings("all-mmini-L6-v2")
+      embeddings = SentenceTransformerEmbeddings("sentence-transformers/all-MiniLM-L6-v2")
       knowledge_base = FAISS.from_texts(chunks, embeddings)
       
       # show user input
