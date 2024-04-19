@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
 from sentence_transformers import SentenceTransformer
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
@@ -21,33 +20,36 @@ def main():
     
     # extract the text
     if pdf is not None:
-      pdf_reader = PdfReader(pdf)
-      text = ""
-      for page in pdf_reader.pages:
-        text += page.extract_text()
+        pdf_reader = PdfReader(pdf)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
         
-      # split into chunks
-      text_splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
-      )
-      chunks = text_splitter.split_text(text)
+        # split into chunks
+        text_splitter = CharacterTextSplitter(
+            separator="\n",
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len
+        )
+        chunks = text_splitter.split_text(text)
       
-      # create embeddings
-      model_name = "all-MiniLM-L6-v2"
-      embeddings = SentenceTransformer(model_name)
-      knowledge_base = FAISS.from_texts(chunks, embeddings)
+        # create embeddings
+        model_name = "all-MiniLM-L6-v2"
+        embeddings_model = SentenceTransformer(model_name)
+        embeddings = embeddings_model.encode(chunks)  # Generate embeddings
+        
+        # create FAISS index
+        knowledge_base = FAISS.from_embeddings(embeddings)
       
-      # show user input
-      user_question = st.text_input("Ask a question about your PDF:")
-      if user_question:
-        docs = knowledge_base.similarity_search(user_question)
-        llm = Together(model="meta-llama/Llama-2-7b-chat-hf",together_api_key="7b011acae38eaa5a2df735f5969d3df31762c4195f6a9043db48dfdd37beb5e4",max_tokens=1024)
-        chain = load_qa_chain(llm, chain_type="stuff")
-        response = chain.run(input_documents=docs, question=user_question)         
-        st.write(response)
+        # show user input
+        user_question = st.text_input("Ask a question about your PDF:")
+        if user_question:
+            docs = knowledge_base.similarity_search(user_question)
+            llm = Together(model="meta-llama/Llama-2-7b-chat-hf",together_api_key="7b011acae38eaa5a2df735f5969d3df31762c4195f6a9043db48dfdd37beb5e4",max_tokens=1024)
+            chain = load_qa_chain(llm, chain_type="stuff")
+            response = chain.run(input_documents=docs, question=user_question)         
+            st.write(response)
     
 
 if __name__ == '__main__':
