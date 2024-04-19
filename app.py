@@ -9,6 +9,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
 from langchain_community.llms.together import Together
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 def main():
     load_dotenv()
@@ -35,7 +36,7 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = SentenceTransformerEmbeddings("sentence-transformers/all-MiniLM-L6-v2")
+      embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2",model_kwargs={'device': 'cpu'})
       knowledge_base = FAISS.from_texts(chunks, embeddings)
       
       # show user input
